@@ -227,3 +227,4 @@ _data.json
 .DS_Store
 
 .jj
+src/static/css/*.css
