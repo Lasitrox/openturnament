@@ -1,7 +1,7 @@
 [tool.pdm]
 
 [project]
-name = "OpenTurnament"
+name = "openturnament"
 version = "0.0.0"
 description = "Free and open source general turnament management sotware"
 license = {text = "MIT"}
