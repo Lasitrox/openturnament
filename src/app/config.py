@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     TEMPLATE_DIR: Path = SRC_DIR / "templates"
     DATA_DIR: Path = APP_DIR / "data"
 
+    DATABASE_URL: str = f"sqlite+aiosqlite:///{DATA_DIR}/database.db"
+
     FASTAPI_PROPERTIES: dict[str, Any] = {
         "title": "Simple Site",
         "description": "A simple htmx and tailwind site built with FastAPI",

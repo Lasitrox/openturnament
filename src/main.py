@@ -5,9 +5,11 @@ from contextlib import asynccontextmanager
 import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from sqlalchemy.ext.asyncio import engine
 
 from app.config import Settings
 from app.routes import base
+from src.app.database.base import Base
 from src.logging_setup import setup_logging
 
 settings = Settings()
@@ -19,6 +21,12 @@ async def lifespan(app: FastAPI):  # noqa: ARG001
     on app startup, and will run code after `yeld` on app shutdown.
     """
     logger = logging.getLogger(__name__)
+
+    # Create tables
+    logger.info("Creating tables")
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
     try:
         await (
             await asyncio.create_subprocess_exec(

@@ -1,8 +1,9 @@
-fastapi[all]
 jinja2
 jinja2-fragments
 pytailwindcss
 pytest
 python-multipart
+sqlalchemy[asyncio]
+aiosqlite
 tinydb
 uvicorn

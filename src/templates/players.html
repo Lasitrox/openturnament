@@ -1,0 +1,49 @@
+{% extends "/shared/_base.html" %}
+
+{% block content %}
+    <section id="body" class="flex flex-col bg-slate-50 min-h-screen max-w-screen-lg m-auto">
+        <div class="flex flex-col items-center py-10 w-full h-full flex-grow">
+            <h2 class="text-2xl leading-relaxed text-slate-800 uppercase">Players</h2>
+            
+            <div id="main-info" class="flex flex-col px-24 py-6 text-center">
+                <p class="py-2">Browse the current roster of competitors.</p>
+                <p class="py-2 text-slate-500">Total Players: {{ players|length }}</p>
+            </div>
+
+            <!-- Container that fills remaining vertical space -->
+            <div class="flex flex-row justify-center w-full flex-grow pb-10">
+                <!-- Table container: Full height (h-full), Min 1/3 Width (min-w-[33%]) -->
+                <div class="bg-white shadow-md rounded-lg overflow-hidden h-full min-w-[33.33%] flex flex-col">
+                    <table class="min-w-full leading-normal h-full">
+                        <thead>
+                            <tr class="bg-slate-200 text-slate-600 uppercase text-sm leading-normal">
+                                <th class="py-3 px-6 text-left">Name</th>
+                                <th class="py-3 px-6 text-left">Team</th>
+                                <th class="py-3 px-6 text-left">Club</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-slate-600 text-sm font-light">
+                            {% for player in players %}
+                            <tr class="border-b border-gray-200 hover:bg-teal-50 transition-colors duration-200">
+                                <td class="py-3 px-6 text-left whitespace-nowrap">
+                                    <span class="font-medium">{{ player.name }}</span>
+                                </td>
+                                <td class="py-3 px-6 text-left">
+                                    <span>{{ player.team }}</span>
+                                </td>
+                                <td class="py-3 px-6 text-left">
+                                    <span>{{ player.club }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            <!-- Empty spacer row to maintain table structure if few players -->
+                            <tr class="flex-grow">
+                                <td colspan="3"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
