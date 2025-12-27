@@ -8,7 +8,6 @@ from app.config import Settings
 settings = Settings()
 
 
-
 class CRUD:
     def __init__(self, db: TinyDB | None = None, table: str | None = None):
         self.db = db
@@ -52,7 +51,6 @@ class CRUD:
         num = randint(0, len(self.table))
         return self.table.get(doc_id=num)
 
-
     @property
     def init_db(self):
         path = str(settings.DATA_DIR / "data.json")
@@ -68,7 +66,6 @@ class CRUD:
 
 
 if __name__ == "__main__":
-
     db = CRUD().with_table("artist_details")
 
     print(db.get_random_item())

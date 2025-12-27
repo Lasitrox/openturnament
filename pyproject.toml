@@ -1,38 +1,65 @@
 [tool.pdm]
 
 [project]
-name = ""
-version = ""
-description = ""
+name = "OpenTurnament"
+version = "0.0.0"
+description = "Free and open source general turnament management sotware"
+license = {text = "MIT"}
 authors = [
-    {name = "Mario Munoz", email = "pythonbynight@gmail.com"},
-]
-dependencies = [
-    "fastapi>=0.95.0",
-    "uvicorn[standard]>=0.21.1",
-    "httpx>=0.23.3",
-    "pytest>=7.2.1",
-    "Jinja2>=3.1.2",
-    "pytailwindcss>=0.1.4",
-    "tinydb>=4.7.1",
-    "jinja2-fragments>=0.3.0",
-    "python-multipart>=0.0.6",
+    {name = "Lasitrox", email = "lasitrox@t-online.de"},
 ]
 requires-python = ">=3.11"
-license = {text = "MIT"}
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+  "fastapi>=0.95.0",
+  "httpx>=0.23.3",
+  "Jinja2>=3.1.2",
+  "jinja2-fragments>=0.3.0",
+  "pytailwindcss>=0.1.4",
+  "pytest>=7.2.1",
+  "python-multipart>=0.0.6",
+  "tinydb>=4.7.1",
+  "uvicorn[standard]>=0.21.1",
+]
 
-
-# OPTIONAL: Only if using Ruff for linting
 [tool.ruff]
-# Enable flake8-bugbear (`B`) rules.
-select = ["B", "E", "F", "Q", "W"]
-
-src = ["app", "tests"]
-line-length = 88
+exclude = [
+    ".git",
+    "__pycache__",
+]
+indent-width = 4
 target-version = "py311"
 
-# Never enforce `E501` (line length violations).
-ignore = ["E501"]
+[tool.ruff.lint]
+select = ["B", "E7", "E9", "W2", "W6", "F", "I", "FA", "ISC", "ICN", "LOG", "INP", "PIE", "T20", "PYI", "SLOT", "UP", "W", "FLY", "C4", "RUF", "G", "RSE", "RET", "SIM", "TC", "PTH", "PERF","N","E", "ASYNC", "A", "TRY", "DTZ", "PT", "FURB", "SLF", "ARG", "PGH", "G004", "PL", "PLR", "C90", "D",]
+ignore = ["PLR", "G004", "N818"]
+fixable = ["ALL"]
+unfixable = []
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
-# Disable autofix for unused imports
-unfixable = ["F401"]
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401", "F403"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = false
+docstring-code-line-length = "dynamic"
+
+[tool.pyproject-fmt]
+column_width = 120
+indent = 2
+keep_full_version = true
+max_supported_python = "3.12"

@@ -3,12 +3,9 @@ from typing import Any
 
 from fastapi.responses import HTMLResponse
 from pydantic_settings import BaseSettings
-from typing import Any
 
-from pathlib import Path
 
 class Settings(BaseSettings):
-
     APP_DIR: Path = Path().cwd()
     SRC_DIR: Path = APP_DIR / "src"
 
@@ -44,7 +41,3 @@ class Settings(BaseSettings):
                 }
             )
         return fastapi_kwargs
-
-
-
-
