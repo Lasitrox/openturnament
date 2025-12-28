@@ -26,18 +26,16 @@
   <script src="/static/js/htmx.min.js"></script>
 </head>
 
-<body class="bg-slate-900">
+<body class="bg-slate-900 flex flex-col h-screen overflow-hidden">
     {% block header %}
     {% include "/shared/_header.html" %}
     {% endblock %}
 
-    <div id="content">
-    {% block content %}
-    {% endblock %}
-    </div>
+        <div id="content" class="flex-grow overflow-hidden">
+        {% block content %}
+        {% endblock %}
+        </div>
 
-    {% block footer %}
-    {% include "/shared/_footer.html" %}
-    {% endblock %}
-</body>
-</html>
+        {% block footer %}
+        {% include "/shared/_footer.html" %}
+        {% endblock %}

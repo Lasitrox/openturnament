@@ -15,6 +15,7 @@ def add_player_routes(router, templates):
             ).scalars(
             ).all()
             player_list = [{
+                "group": player.group,
                 "name": player.name,
                 "club": player.club,
                 "teams": [
