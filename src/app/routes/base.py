@@ -1,16 +1,41 @@
-from dataclasses import dataclass
+from __future__ import annotations
 
 from fastapi import APIRouter
 from jinja2_fragments.fastapi import Jinja2Blocks
 
 from src.app.config import Settings
 
-
-@dataclass
-class Base:
-    settings = Settings()
-    templates = Jinja2Blocks(directory=settings.TEMPLATE_DIR)
-    router = APIRouter()
+from .players import player_routes
 
 
-base = Base()
+class RouterBase:
+    __instance: RouterBase | None = None
+
+    def __init__(self):
+        self.settings: Settings = Settings()
+        self.templates: Jinja2Blocks = Jinja2Blocks(directory=self.settings.TEMPLATE_DIR)
+        self.router: APIRouter = APIRouter()
+
+        self.create_routes()
+
+    def create_routes(self):
+        player_routes(self.router, self.templates)
+
+    @classmethod
+    def instance(cls) -> RouterBase:
+        if cls.__instance is None:
+            cls.__instance = cls()
+        return cls.__instance
+
+    @classmethod
+    def router(cls) -> APIRouter:
+        return cls.instance().router
+
+    @classmethod
+    def settings(cls) -> Settings:
+        return cls.instance().settings
+
+    @classmethod
+    def templates(cls) -> Jinja2Blocks:
+        return cls.instance().templates
+

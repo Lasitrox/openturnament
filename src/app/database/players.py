@@ -1,18 +1,18 @@
-from sqlalchemy import Column, ForeignKey, Table
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.app.database.base import Base
-
-# Association table for Many-to-Many relationship
-player_team = Table(
-    "player_team",
-    Base.metadata,
-    Column("player_id", ForeignKey("players.id"), primary_key=True),
-    Column("team_id", ForeignKey("teams.id"), primary_key=True),
-)
+from src.app.database.base import DataBase
 
 
-class Player(Base):
+class PlayerTeam(DataBase):
+    """Association table for Many-to-Many relationship between players and teams."""
+    __tablename__ = "player_team"
+
+    player_id: Mapped[int] = mapped_column(ForeignKey("players.id"), primary_key=True)
+    team_id: Mapped[int] = mapped_column(ForeignKey("teams.id"), primary_key=True)
+
+
+class Player(DataBase):
     """Represents a player in the system.
 
     This class provides a structure for storing and managing information related
@@ -43,10 +43,10 @@ class Player(Base):
 
     # Relationship to the sub-table 'teams'
     teams: Mapped[list["Team"]] = relationship(
-        secondary=player_team, back_populates="players"
+        secondary="player_team", back_populates="players"
     )
 
-class Team(Base):
+class Team(DataBase):
     """Representation of a sports team.
 
     This class maps to the "teams" table in the database. Each team has an identifier, a name, 
@@ -71,5 +71,5 @@ class Team(Base):
 
     # Many-to-many relationship to 'players'
     players: Mapped[list["Player"]] = relationship(
-        secondary=player_team, back_populates="teams"
+        secondary="player_team", back_populates="teams"
     )

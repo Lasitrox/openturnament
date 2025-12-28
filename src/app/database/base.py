@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine, AsyncSession
-from sqlalchemy.orm import DeclarativeBase, sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.orm import declarative_base, sessionmaker
 
 from src.app.config import Settings
 
@@ -10,8 +10,7 @@ engine = create_async_engine(settings.DATABASE_URL, echo=True)
 session_maker = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
 
 
-class Base(DeclarativeBase):
-    pass
+DataBase = declarative_base()
 
 
 @asynccontextmanager

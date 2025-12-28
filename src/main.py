@@ -5,27 +5,35 @@ from contextlib import asynccontextmanager
 import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from sqlalchemy.ext.asyncio import engine
 
-from app.config import Settings
-from app.routes import base
-from src.app.database.base import Base
-from src.logging_setup import setup_logging
+from data.testdata import insert_data
+from logging_setup import setup_logging
+from src.app.config import Settings
+from src.app.database.base import DataBase
+from src.app.database.base import engine as db_engine
+from src.app.routes import RouterBase
 
 settings = Settings()
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):  # noqa: ARG001
-    """Context manager for FastAP
-    on app startup, and will run code after `yeld` on app shutdown.
+    """Context manager for FastAPI
+    on app startup, and will run code after `yield` on app shutdown.
     """
     logger = logging.getLogger(__name__)
 
-    # Create tables
+    # Create tables using the existing engine from base.py
     logger.info("Creating tables")
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    async with db_engine.begin() as conn:
+        # This will create all tables defined in your models if they don't exist
+        await conn.run_sync(DataBase.metadata.create_all)
+
+    # Note: Ensure insert_data() handles existing data to avoid duplicates on restart
+    try:
+        await insert_data()
+    except Exception:
+        logger.exception("Error inserting test data")
 
     try:
         await (
@@ -55,6 +63,8 @@ async def lifespan(app: FastAPI):  # noqa: ARG001
 
     yield
 
+    asyncio.run(db_engine.dispose())
+
 
 def get_app() -> FastAPI:
     """Create a FastAPI app with the specified settings."""
@@ -62,7 +72,7 @@ def get_app() -> FastAPI:
 
     app.mount("/static", StaticFiles(directory=settings.STATIC_DIR), name="static")
 
-    app.include_router(base.router)
+    app.include_router(RouterBase.router())
 
     return app
 

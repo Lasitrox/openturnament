@@ -59,7 +59,7 @@ docstring-code-format = false
 docstring-code-line-length = "dynamic"
 
 [tool.pyproject-fmt]
-column_width = 120
+column_width = 80
 indent = 2
 keep_full_version = true
 max_supported_python = "3.12"
