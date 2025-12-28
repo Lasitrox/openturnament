@@ -66,7 +66,7 @@ class Team(Base):
     __tablename__ = "teams"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    team_name: Mapped[str] = mapped_column()
+    name: Mapped[str] = mapped_column()
     player_id: Mapped[int] = mapped_column(ForeignKey("players.id"))
 
     # Many-to-many relationship to 'players'
