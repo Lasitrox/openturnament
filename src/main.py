@@ -63,7 +63,7 @@ async def lifespan(app: FastAPI):  # noqa: ARG001
 
     yield
 
-    asyncio.run(db_engine.dispose())
+    await db_engine.dispose()
 
 
 def get_app() -> FastAPI:

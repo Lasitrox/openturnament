@@ -1,14 +1,19 @@
 from fastapi import Request
+from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 
 from src.app.database import Player, session_scope
 
 
-def player_routes(router, templates):
+def add_player_routes(router, templates):
     @router.get("/players")
-    async def players(request: Request):
+    async def player_routes(request: Request):
         """Players page - display the roster of competitors."""
         async with session_scope() as session:
-            players: list[Player] = (await session.execute(session.query(Player))).all()
+            players: list[Player] = (await session.execute(
+                select(Player).options(selectinload(Player.teams)))
+            ).scalars(
+            ).all()
             player_list = [{
                 "name": player.name,
                 "club": player.club,

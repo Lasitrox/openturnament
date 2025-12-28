@@ -5,7 +5,8 @@ from jinja2_fragments.fastapi import Jinja2Blocks
 
 from src.app.config import Settings
 
-from .players import player_routes
+from .players import add_player_routes
+from .root import add_root_routes
 
 
 class RouterBase:
@@ -19,7 +20,8 @@ class RouterBase:
         self.create_routes()
 
     def create_routes(self):
-        player_routes(self.router, self.templates)
+        add_player_routes(self.router, self.templates)
+        add_root_routes(self.router, self.templates)
 
     @classmethod
     def instance(cls) -> RouterBase:

@@ -67,7 +67,6 @@ class Team(DataBase):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column()
-    player_id: Mapped[int] = mapped_column(ForeignKey("players.id"))
 
     # Many-to-many relationship to 'players'
     players: Mapped[list["Player"]] = relationship(
