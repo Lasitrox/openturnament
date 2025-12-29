@@ -23,19 +23,6 @@ async def lifespan(app: FastAPI):  # noqa: ARG001
     """
     logger = logging.getLogger(__name__)
 
-    # Create tables using the existing engine from base.py
-    logger.info("Creating tables")
-    async with db_engine.begin() as conn:
-        # This will create all tables defined in your models if they don't exist
-        await conn.run_sync(DataBase.metadata.create_all)
-
-    # Note: Ensure insert_data() handles existing data to avoid duplicates on restart
-    if settings.USE_TEST_DATABASE:
-        try:
-            await insert_data()
-        except Exception:
-            logger.exception("Error inserting test data")
-
     try:
         await (
             await asyncio.create_subprocess_exec(
@@ -61,6 +48,19 @@ async def lifespan(app: FastAPI):  # noqa: ARG001
             logger.exception("Error running tailwindcss")
     except Exception:
         logger.exception("Error running tailwindcss")
+
+    # Create tables using the existing engine from base.py
+    logger.info("Creating tables")
+    async with db_engine.begin() as conn:
+        # This will create all tables defined in your models if they don't exist
+        await conn.run_sync(DataBase.metadata.create_all)
+
+    # Note: Ensure insert_data() handles existing data to avoid duplicates on restart
+    if settings.USE_TEST_DATABASE:
+        try:
+            await insert_data()
+        except Exception:
+            logger.exception("Error inserting test data")
 
     yield
 

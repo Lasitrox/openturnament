@@ -278,10 +278,13 @@
   .max-w-screen-lg {
     max-width: var(--breakpoint-lg);
   }
-  .min-w-\[400px\] {
-    min-width: 400px;
+  .flex-1 {
+    flex: 1;
   }
   .flex-grow {
+    flex-grow: 1;
+  }
+  .grow {
     flex-grow: 1;
   }
   .flex-col {
@@ -326,11 +329,14 @@
   .overflow-hidden {
     overflow: hidden;
   }
-  .overflow-x-auto {
-    overflow-x: auto;
-  }
   .overflow-x-clip {
     overflow-x: clip;
+  }
+  .overflow-x-hidden {
+    overflow-x: hidden;
+  }
+  .overflow-x-scroll {
+    overflow-x: scroll;
   }
   .overflow-y-auto {
     overflow-y: auto;
@@ -461,6 +467,9 @@
   .font-semibold {
     --tw-font-weight: var(--font-weight-semibold);
     font-weight: var(--font-weight-semibold);
+  }
+  .whitespace-nowrap {
+    white-space: nowrap;
   }
   .text-cyan-800 {
     color: var(--color-cyan-800);

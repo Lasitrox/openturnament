@@ -10,20 +10,20 @@
                 </div>
 
                 <!-- Horizontal scrollable container for groups -->
-                    <div class="flex flex-row w-full flex-grow overflow-x-auto pb-4 px-4 gap-6 items-start">
+                    <div class="flex flex-row w-full flex-1 overflow-x-scroll pb-4 px-4 gap-6 items-start">
                         {% for group, group_players in players|groupby('group') %}
                         <!-- Individual group container with its own vertical scroll -->
-                        <div class="flex flex-col min-w-[400px] max-h-full">
+                        <div class="flex flex-col max-h-full">
                             <h3 class="text-xl font-semibold text-slate-700 mb-4 border-b-2 border-teal-500 inline-block self-start">{{ group }}</h3>
                             
                             <!-- Scrollable Table container -->
-                            <div class="bg-white shadow-md rounded-lg flex flex-col overflow-y-auto border border-slate-200">
-                                <table class="min-w-full leading-normal">
+                            <div class="bg-white shadow-md rounded-lg grow flex-col overflow-x-hidden overflow-y-auto border border-slate-200">
+                                <table class="leading-normal">
                                     <thead class="sticky top-0 z-10">
                                         <tr class="bg-slate-200 text-slate-600 uppercase text-sm leading-normal">
-                                            <th class="py-3 px-6 text-left">Name</th>
-                                            <th class="py-3 px-6 text-left">Team</th>
-                                            <th class="py-3 px-6 text-left">Club</th>
+                                            <th class="py-3 px-6 text-left whitespace-nowrap">Name</th>
+                                            <th class="py-3 px-6 text-left whitespace-nowrap">Team</th>
+                                            <th class="py-3 px-6 text-left whitespace-nowrap">Club</th>
                                         </tr>
                                     </thead>
                                     <tbody class="text-slate-600 text-sm font-light">
