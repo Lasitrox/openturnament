@@ -1,4 +1,6 @@
-from fastapi import Request
+import logging
+
+from fastapi import Form, Request, Response  # Added Form
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
@@ -6,9 +8,11 @@ from src.app.database import Club, Group, Player, Team, session_scope
 
 
 def add_player_routes(router, templates):
+    logger = logging.getLogger(__name__)
     @router.get("/players")
     async def player_routes(request: Request):
         """Players page - display the roster of competitors."""
+        logger.info("Displaying players page")
         async with session_scope() as session:
             players: list[Player] = (
                 (
@@ -25,6 +29,7 @@ def add_player_routes(router, templates):
             )
             player_list = [
                 {
+                    "id": player.id,
                     "group": player.group.id,
                     "name": player.name,
                     "club": player.club.id,
@@ -54,3 +59,24 @@ def add_player_routes(router, templates):
                     "groups": group_list,
                 },
             )
+
+    @router.put("/api/players/{player_id}/club")
+    async def update_player_club(player_id: int, club_id: int = Form(...)):
+        logger.info(
+            f"Updating player {player_id} club to {club_id}"
+        )
+        """HTMX endpoint to update player club."""
+        async with session_scope() as session:
+            try:
+                player = await session.get(Player, player_id)
+                if player:
+                    player.club_id = club_id
+                    return Response(status_code=200)
+
+                return Response(status_code=404)
+            except Exception:
+                logger.exception("Error updating player club")
+                return Response(status_code=400)
+
+            # HTMX expects a response.
+            # Since we used hx-swap="none", we can just return a 204 No Content

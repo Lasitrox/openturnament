@@ -42,11 +42,21 @@
                                 </span>
                             </td>
                             <td class="py-3 px-4 text-left whitespace-nowrap">
-                                <span>
-                                    {% for club in clubs if club.id == player.club %}
-                                        {{ club.name }}
-                                    {% endfor %}
-                                </span>
+                                <label>
+                                    <select
+                                            name="club_id"
+                                            class="bg-transparent border border-slate-300 rounded px-2 py-1 focus:outline-none focus:border-teal-500"
+                                            hx-put="/players/{{ player.id }}/club"
+                                            hx-trigger="change"
+                                            hx-swap="none"
+                                    >
+                                        {% for club in clubs %}
+                                        <option value="{{ club.id }}" {% if club.id== player.club %}selected{% endif %}>
+                                            {{ club.name }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </label>
                             </td>
                         </tr>
                         {% endfor %}
