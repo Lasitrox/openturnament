@@ -24,6 +24,8 @@ class Settings(BaseSettings):
 
     DISABLE_DOCS: bool = True
 
+    USE_TEST_DATABASE: bool = True
+
     @property
     def fastapi_kwargs(self) -> dict[str, Any]:
         """Creates dictionary of values to pass to FastAPI app

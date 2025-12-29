@@ -281,9 +281,6 @@
   .min-w-\[400px\] {
     min-width: 400px;
   }
-  .min-w-full {
-    min-width: 100%;
-  }
   .flex-grow {
     flex-grow: 1;
   }
@@ -464,9 +461,6 @@
   .font-semibold {
     --tw-font-weight: var(--font-weight-semibold);
     font-weight: var(--font-weight-semibold);
-  }
-  .whitespace-nowrap {
-    white-space: nowrap;
   }
   .text-cyan-800 {
     color: var(--color-cyan-800);

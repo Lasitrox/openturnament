@@ -30,10 +30,11 @@ async def lifespan(app: FastAPI):  # noqa: ARG001
         await conn.run_sync(DataBase.metadata.create_all)
 
     # Note: Ensure insert_data() handles existing data to avoid duplicates on restart
-    try:
-        await insert_data()
-    except Exception:
-        logger.exception("Error inserting test data")
+    if settings.USE_TEST_DATABASE:
+        try:
+            await insert_data()
+        except Exception:
+            logger.exception("Error inserting test data")
 
     try:
         await (
@@ -62,6 +63,11 @@ async def lifespan(app: FastAPI):  # noqa: ARG001
         logger.exception("Error running tailwindcss")
 
     yield
+
+    if settings.USE_TEST_DATABASE:
+        logger.info("Dropping tables")
+        async with db_engine.begin() as conn:
+            await conn.run_sync(DataBase.metadata.drop_all)
 
     await db_engine.dispose()
 

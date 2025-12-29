@@ -4,6 +4,26 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.app.database.base import DataBase
 
 
+class Group(DataBase):
+    """Represents a group or category for players."""
+    __tablename__ = "groups"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(unique=True)
+
+    players: Mapped[list["Player"]] = relationship(back_populates="group")
+
+
+class Club(DataBase):
+    """Represents a club affiliation."""
+    __tablename__ = "clubs"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(unique=True)
+
+    players: Mapped[list["Player"]] = relationship(back_populates="club")
+
+
 class PlayerTeam(DataBase):
     """Association table for Many-to-Many relationship between players and teams."""
     __tablename__ = "player_team"
@@ -25,23 +45,27 @@ class Player(DataBase):
     :type id: int
     :ivar name: Name of the player.
     :type name: str
-    :ivar group: Group or category to which the player belongs.
-    :type group: str
-    :ivar club: Club affiliation of the player.
-    :type club: str
-    :ivar teams: List of teams associated with the player. This attribute is
-                 managed as a relationship with cascading behavior, allowing
-                 the deletion of related teams when a player is removed.
+    :ivar group_id: Foreign key referencing the group.
+    :type group_id: int
+    :ivar club_id: Foreign key referencing the club.
+    :type club_id: int
+    :ivar group: Group object associated with the player.
+    :type group: Group
+    :ivar club: Club object associated with the player.
+    :type club: Club
+    :ivar teams: List of teams associated with the player.
     :type teams: list[Team]
     """
     __tablename__ = "players"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column()
-    group: Mapped[str] = mapped_column()
-    club: Mapped[str] = mapped_column()
+    name: Mapped[str] = mapped_column(unique=True)
+    group_id: Mapped[int] = mapped_column(ForeignKey("groups.id"), nullable=True)
+    club_id: Mapped[int] = mapped_column(ForeignKey("clubs.id"), nullable=True)
 
-    # Relationship to the sub-table 'teams'
+    # Relationships
+    group: Mapped["Group"] = relationship(back_populates="players")
+    club: Mapped["Club"] = relationship(back_populates="players")
     teams: Mapped[list["Team"]] = relationship(
         secondary="player_team", back_populates="players"
     )
@@ -66,7 +90,7 @@ class Team(DataBase):
     __tablename__ = "teams"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column()
+    name: Mapped[str] = mapped_column(unique=True)
 
     # Many-to-many relationship to 'players'
     players: Mapped[list["Player"]] = relationship(

@@ -11,13 +11,17 @@ def add_player_routes(router, templates):
         """Players page - display the roster of competitors."""
         async with session_scope() as session:
             players: list[Player] = (await session.execute(
-                select(Player).options(selectinload(Player.teams)))
+                select(Player).options(
+                    selectinload(Player.teams),
+                    selectinload(Player.group),
+                    selectinload(Player.club)
+                ))
             ).scalars(
             ).all()
             player_list = [{
-                "group": player.group,
+                "group": player.group.name,
                 "name": player.name,
-                "club": player.club,
+                "club": player.club.name,
                 "teams": [
                     team.name for team in player.teams
                 ]

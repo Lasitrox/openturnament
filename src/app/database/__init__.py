@@ -1,2 +1,2 @@
 from .base import session_scope
-from .players import Player, Team
+from .players import Player, Team, Group, Club
