@@ -10,7 +10,7 @@
         </div>
 
         <!-- Horizontal scrollable container for groups -->
-        <div class="flex flex-row w-full flex-1 overflow-x-scroll pb-4 px-4 gap-6 items-start">
+        <div id="player-roster" class="flex flex-row w-full flex-1 overflow-x-scroll pb-4 px-4 gap-6 items-start">
             {% for group in groups %}
             <!-- Individual group container with its own vertical scroll -->
             <div class="flex flex-col max-h-full">
@@ -42,13 +42,13 @@
                                 </span>
                             </td>
                             <td class="py-3 px-4 text-left whitespace-nowrap">
-                                <label>
                                     <select
                                             name="club_id"
                                             class="bg-transparent border border-slate-300 rounded px-2 py-1 focus:outline-none focus:border-teal-500"
-                                            hx-put="/api/players/{{ player.id }}/club"
+                                            hx-post="/players/{{ player.id }}/club/dispatch"
                                             hx-trigger="change"
-                                            hx-swap="none"
+                                            hx-target="closest td"
+                                            hx-swap="innerHTML"
                                     >
                                         <option value="" {% if not player.club %}selected{% endif %}>None</option>
                                         {% for club in clubs %}
@@ -56,9 +56,10 @@
                                             {{ club.name }}
                                         </option>
                                         {% endfor %}
+                                        <option disabled>──────────</option>
+                                        <option value="new">+ Add New Club...</option>
                                     </select>
-                                </label>
-                            </td>
+                                </td>
                         </tr>
                         {% endfor %}
                         </tbody>
