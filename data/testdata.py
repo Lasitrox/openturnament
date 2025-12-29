@@ -29,10 +29,18 @@ async def insert_data():
                 f_name = first_names[player_idx % len(first_names)]
                 l_name = last_names[(player_idx // len(first_names)) % len(last_names)]
 
+                # Assign a primary team
+                player_teams = [teams[player_idx % len(teams)]]
+
+                # Assign an additional team to every 3rd player for variety
+                if player_idx % 3 == 0:
+                    second_team = teams[(player_idx + 1) % len(teams)]
+                    player_teams.append(second_team)
+
                 players.append(
                     Player(
                         name=f"{f_name} {l_name} {player_idx + 1}",
-                        teams=[teams[player_idx % len(teams)]],
+                        teams=player_teams,
                         club=clubs[player_idx % len(clubs)],
                         group=group
                     )
