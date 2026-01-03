@@ -24,6 +24,7 @@ class Settings(BaseSettings):
 
     DISABLE_DOCS: bool = True
 
+    RUN_TAILWIND: bool = True
     USE_TEST_DATABASE: bool = True
 
     @property

@@ -2,16 +2,15 @@ import asyncio
 import logging
 from contextlib import asynccontextmanager
 
-import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from data.testdata import insert_data
-from logging_setup import LOGGING_CONFIG, setup_logging
-from src.app.config import Settings
 from src.app.database.base import DataBase
 from src.app.database.base import engine as db_engine
 from src.app.routes import RouterBase
+from src.config import Settings
+from src.logging_setup import LOGGING_CONFIG, setup_logging
 
 settings = Settings()
 
@@ -46,27 +45,28 @@ async def lifespan(app: FastAPI):  # noqa: ARG001
             process.wait(),
         )
 
-    try:
-        await run_tailwind(
-            "tailwindcss",
-            "-i",
-            str(settings.STATIC_DIR / "src" / "tw.css"),
-            "-o",
-            str(settings.STATIC_DIR / "css" / "main.css"),
-        )
-    except FileNotFoundError:
+    if settings.RUN_TAILWIND:
         try:
             await run_tailwind(
-                "./.venv/bin/tailwindcss",
+                "tailwindcss",
                 "-i",
                 str(settings.STATIC_DIR / "src" / "tw.css"),
                 "-o",
                 str(settings.STATIC_DIR / "css" / "main.css"),
             )
+        except FileNotFoundError:
+            try:
+                await run_tailwind(
+                    "./.venv/bin/tailwindcss",
+                    "-i",
+                    str(settings.STATIC_DIR / "src" / "tw.css"),
+                    "-o",
+                    str(settings.STATIC_DIR / "css" / "main.css"),
+                )
+            except Exception:
+                logger.exception("Error running tailwindcss")
         except Exception:
             logger.exception("Error running tailwindcss")
-    except Exception:
-        logger.exception("Error running tailwindcss")
 
     # Create tables using the existing engine from base.py
     logger.info("Creating tables")
@@ -102,8 +102,11 @@ def get_app() -> FastAPI:
     return app
 
 
+setup_logging()
+logging.getLogger(__name__).info("Starting FastAPI application")
+app = get_app()
+
 if __name__ == "__main__":
-    setup_logging()
-    logging.getLogger(__name__).info("Starting FastAPI application")
-    app = get_app()
+    import uvicorn
+
     uvicorn.run(app, host="127.0.0.1", port=8000, log_config=LOGGING_CONFIG)

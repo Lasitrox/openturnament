@@ -2,7 +2,7 @@ version: 1
 disable_existing_loggers: false
 formatters:
   default:
-    "()": logging_setup.ColorFormatter
+    "()": src.logging_setup.ColorFormatter
 handlers:
   console:
     class: logging.StreamHandler

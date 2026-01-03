@@ -1,12 +1,13 @@
 import logging.config
-import yaml
 from pathlib import Path
+
+import yaml
 
 
 class ColorFormatter(logging.Formatter):
     """Custom logging formatter to support colored output."""
 
-    COLORS = {
+    COLORS = {  # noqa: RUF012
         "DEBUG": "\033[97m",     # White
         "INFO": "\033[97m",      # White
         "WARNING": "\033[97m",   # White

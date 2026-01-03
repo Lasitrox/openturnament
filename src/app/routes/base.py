@@ -3,7 +3,7 @@ from __future__ import annotations
 from fastapi import APIRouter
 from jinja2_fragments.fastapi import Jinja2Blocks
 
-from src.app.config import Settings
+from src.config import Settings
 
 from .players import add_player_routes
 from .root import add_root_routes

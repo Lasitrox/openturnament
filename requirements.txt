@@ -7,3 +7,7 @@ sqlalchemy[asyncio]
 aiosqlite
 tinydb
 uvicorn
+ruff
+pydantic-settings
+fastapi
+pyyaml
