@@ -24,7 +24,7 @@ class ColorFormatter(logging.Formatter):
 
 def get_logging_config():
     """Load logging configuration from YAML file."""
-    config_path = Path(__file__).parent.parent / "logging.yaml"
+    config_path = Path().cwd() / "src" / "logging.yaml"
     with open(config_path) as f:
         return yaml.safe_load(f)
 
