@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from data.testdata import insert_data
-from logging_setup import setup_logging
+from logging_setup import LOGGING_CONFIG, setup_logging
 from src.app.config import Settings
 from src.app.database.base import DataBase
 from src.app.database.base import engine as db_engine
@@ -16,34 +16,53 @@ from src.app.routes import RouterBase
 settings = Settings()
 
 
+async def log_subprocess_output(stream, logger, level):
+    """Read from stream and log with the given logger and level."""
+    while True:
+        line = await stream.readline()
+        if line:
+            logger.log(level, line.decode().strip())
+        else:
+            break
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):  # noqa: ARG001
     """Context manager for FastAPI
     on app startup, and will run code after `yield` on app shutdown.
     """
-    logger = logging.getLogger(__name__)
+    logger = logging.getLogger("Fast API lifespan")
+
+    async def run_tailwind(cmd, *args):
+        process = await asyncio.create_subprocess_exec(
+            cmd,
+            *args,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
+        await asyncio.gather(
+            log_subprocess_output(process.stdout, logger, logging.INFO),
+            log_subprocess_output(process.stderr, logger, logging.INFO),
+            process.wait(),
+        )
 
     try:
-        await (
-            await asyncio.create_subprocess_exec(
-                "tailwindcss",
+        await run_tailwind(
+            "tailwindcss",
+            "-i",
+            str(settings.STATIC_DIR / "src" / "tw.css"),
+            "-o",
+            str(settings.STATIC_DIR / "css" / "main.css"),
+        )
+    except FileNotFoundError:
+        try:
+            await run_tailwind(
+                "./.venv/bin/tailwindcss",
                 "-i",
                 str(settings.STATIC_DIR / "src" / "tw.css"),
                 "-o",
                 str(settings.STATIC_DIR / "css" / "main.css"),
             )
-        ).wait()
-    except FileNotFoundError:
-        try:
-            await (
-                await asyncio.create_subprocess_exec(
-                    "./.venv/bin/tailwindcss",
-                    "-i",
-                    str(settings.STATIC_DIR / "src" / "tw.css"),
-                    "-o",
-                    str(settings.STATIC_DIR / "css" / "main.css"),
-                )
-            ).wait()
         except Exception:
             logger.exception("Error running tailwindcss")
     except Exception:
@@ -87,4 +106,4 @@ if __name__ == "__main__":
     setup_logging()
     logging.getLogger(__name__).info("Starting FastAPI application")
     app = get_app()
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=8000, log_config=LOGGING_CONFIG)
