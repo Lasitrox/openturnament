@@ -1,4 +1,6 @@
 import logging.config
+import yaml
+from pathlib import Path
 
 
 class ColorFormatter(logging.Formatter):
@@ -20,40 +22,14 @@ class ColorFormatter(logging.Formatter):
         return formatter.format(record)
 
 
-LOGGING_CONFIG = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {
-        "default": {
-            "()": ColorFormatter,
-        },
-    },
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "default",
-        },
-    },
-    "root": {
-        "level": "INFO",
-        "handlers": ["console"],
-    },
-    "loggers": {
-        "uvicorn": {
-            "handlers": ["console"],
-            "level": "INFO",
-            "propagate": False,
-        },
-        "uvicorn.error": {
-            "level": "INFO",
-        },
-        "uvicorn.access": {
-            "handlers": ["console"],
-            "level": "INFO",
-            "propagate": False,
-        },
-    },
-}
+def get_logging_config():
+    """Load logging configuration from YAML file."""
+    config_path = Path(__file__).parent.parent / "logging.yaml"
+    with open(config_path) as f:
+        return yaml.safe_load(f)
+
+
+LOGGING_CONFIG = get_logging_config()
 
 
 def setup_logging():
