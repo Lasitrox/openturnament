@@ -46,12 +46,13 @@
                                     <select
                                             name="club_id"
                                             class="bg-transparent border border-slate-300 rounded px-2 py-1 focus:outline-none focus:border-teal-500"
-                                            hx-put="/players/{{ player.id }}/club"
+                                            hx-put="/api/players/{{ player.id }}/club"
                                             hx-trigger="change"
                                             hx-swap="none"
                                     >
+                                        <option value="" {% if not player.club %}selected{% endif %}>None</option>
                                         {% for club in clubs %}
-                                        <option value="{{ club.id }}" {% if club.id== player.club %}selected{% endif %}>
+                                        <option value="{{ club.id }}" {% if club.id == player.club %}selected{% endif %}>
                                             {{ club.name }}
                                         </option>
                                         {% endfor %}
@@ -66,7 +67,6 @@
             </div>
             {% endfor %}
         </div>
-    </div>
     </div>
 </section>
 {% endblock %}

@@ -1,5 +1,7 @@
 import logging
 
+from typing import Optional
+
 from fastapi import Form, Request, Response  # Added Form
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
@@ -30,10 +32,10 @@ def add_player_routes(router, templates):
             player_list = [
                 {
                     "id": player.id,
-                    "group": player.group.id,
+                    "group": player.group.id if player.group else None,
                     "name": player.name,
-                    "club": player.club.id,
-                    "teams": [team.id for team in player.teams],
+                    "club": player.club.id if player.club else None,
+                    "teams": [team.id for team in player.teams] if player.teams else [],
                 }
                 for player in players
             ]
@@ -61,7 +63,7 @@ def add_player_routes(router, templates):
             )
 
     @router.put("/api/players/{player_id}/club")
-    async def update_player_club(player_id: int, club_id: int = Form(...)):
+    async def update_player_club(player_id: int, club_id: Optional[int] = Form(None)):
         logger.info(
             f"Updating player {player_id} club to {club_id}"
         )
