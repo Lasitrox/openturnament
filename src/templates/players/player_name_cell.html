@@ -1,0 +1,6 @@
+<td class="py-3 px-4 text-left whitespace-nowrap"
+    hx-get="/players/{{ player.id }}/name"
+    hx-trigger="mouseenter, every {{ 120 + (player.id % 30) }}s"
+    hx-swap="outerHTML">
+    <span class="font-medium">{{ player.name }}</span>
+</td>

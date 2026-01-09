@@ -28,39 +28,8 @@
                         </tr>
                         </thead>
                         <tbody class="text-slate-600 text-sm font-light">
-                        {% for player in players if player.group == group.id %}
-                        <tr class="border-b border-gray-200 hover:bg-teal-50 transition-colors duration-200">
-                            <td class="py-3 px-4 text-left whitespace-nowrap">
-                                <span class="font-medium">{{ player.name }}</span>
-                            </td>
-                            <td class="py-3 px-4 text-left whitespace-nowrap">
-                                <span>
-                                    {% set player_team_names = [] %}
-                                    {% for team in teams if team.id in player.teams %}
-                                        <span class="badge">{{ team.name }}</span>{% if not loop.last %}, {% endif %}
-                                    {% endfor %}
-                                </span>
-                            </td>
-                            <td class="py-3 px-4 text-left whitespace-nowrap">
-                                    <select
-                                            name="club_id"
-                                            class="bg-transparent border border-slate-300 rounded px-2 py-1 focus:outline-none focus:border-teal-500"
-                                            hx-post="/players/{{ player.id }}/club/dispatch"
-                                            hx-trigger="change"
-                                            hx-target="closest td"
-                                            hx-swap="innerHTML"
-                                    >
-                                        <option value="" {% if not player.club %}selected{% endif %}>None</option>
-                                        {% for club in clubs %}
-                                        <option value="{{ club.id }}" {% if club.id == player.club %}selected{% endif %}>
-                                            {{ club.name }}
-                                        </option>
-                                        {% endfor %}
-                                        <option disabled>──────────</option>
-                                        <option value="new">+ Add New Club...</option>
-                                    </select>
-                                </td>
-                        </tr>
+                        {% for player in players if player.group_id == group.id %}
+                            {% include "players/players_row.html" %}
                         {% endfor %}
                         </tbody>
                     </table>

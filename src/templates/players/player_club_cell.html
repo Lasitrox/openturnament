@@ -1,0 +1,22 @@
+<td class="py-3 px-4 text-left whitespace-nowrap"
+    hx-get="/players/{{ player.id }}/club"
+    hx-trigger="mouseenter, every {{ 120 + (player.id % 30) }}s"
+    hx-swap="outerHTML">
+    <select
+            name="club_id"
+            class="bg-transparent border border-slate-300 rounded px-2 py-1 focus:outline-none focus:border-teal-500"
+            hx-post="/players/{{ player.id }}/club/dispatch"
+            hx-trigger="change"
+            hx-target="closest td"
+            hx-swap="outerHTML"
+    >
+        <option value="" {% if not player.club %}selected{% endif %}>None</option>
+        {% for club in clubs %}
+        <option value="{{ club.id }}" {% if player.club and player.club.id == club.id %}selected{% endif %}>
+            {{ club.name }}
+        </option>
+        {% endfor %}
+        <option disabled>──────────</option>
+        <option value="new">+ Add New Club...</option>
+    </select>
+</td>

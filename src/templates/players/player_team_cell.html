@@ -1,0 +1,10 @@
+<td class="py-3 px-4 text-left whitespace-nowrap"
+    hx-get="/players/{{ player.id }}/teams"
+    hx-trigger="mouseenter, every {{ 120 + (player.id % 30) }}s"
+    hx-swap="outerHTML">
+    <span>
+        {% for team in player.teams %}
+            <span class="badge">{{ team.name }}</span>{% if not loop.last %}, {% endif %}
+        {% endfor %}
+    </span>
+</td>
