@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import Form, Request, Response  # Added Form
+from fastapi import Form, Request, Response
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
@@ -28,16 +28,6 @@ def add_player_routes(router, templates):
                 .scalars()
                 .all()
             )
-            player_list = [
-                {
-                    "id": player.id,
-                    "group": player.group.id if player.group else None,
-                    "name": player.name,
-                    "club": player.club.id if player.club else None,
-                    "teams": [team.id for team in player.teams] if player.teams else [],
-                }
-                for player in players
-            ]
             club_list = [
                 {"id": club.id, "name": club.name}
                 for club in (await session.execute(select(Club))).scalars().all()
@@ -54,80 +44,73 @@ def add_player_routes(router, templates):
                 "players.html",
                 {
                     "request": request,
-                    "players": player_list,
+                    "players": players,
                     "clubs": club_list,
                     "teams": team_list,
                     "groups": group_list,
                 },
             )
 
-    @router.post("/players/{player_id}/club/dispatch")
-    async def dispatch_club_action(player_id: int, club_id: str = Form(...)):
-        """Unified endpoint to handle selection changes."""
-        if club_id == "new":
-            logger.info(f"Displaying new club form for player {player_id}")
-            return Response(
-                content=f"""
-                                <div class="flex gap-2">
-                                    <input type="text" name="new_club_name" class="border rounded px-2 py-1 w-32" placeholder="Club name...">
-                                    <button hx-post="/players/{player_id}/club"
-                                            hx-include="closest td"
-                                            hx-target="closest td"
-                                            class="text-teal-600 font-bold">✓</button>
-                                    <button hx-get="/players" hx-target="body" class="text-gray-400">✕</button>
-                                </div>
-                            """
+
+    @router.get("/players/{player_id}")
+    async def get_player_row(player_id: int, request: Request, editable: bool = False):
+        """Returns a single player row, either read-only or editable."""
+        async with session_scope() as session:
+            player = await session.get(
+                Player,
+                player_id,
+                options=[
+                    selectinload(Player.teams),
+                    selectinload(Player.group),
+                    selectinload(Player.club),
+                ],
             )
-        return Response(status_code=400, content={"message": "Invalid club ID"})
+            if not player:
+                return Response(status_code=404)
+
+            clubs = (await session.execute(select(Club))).scalars().all()
+            teams = (await session.execute(select(Team))).scalars().all()
+
+            template = "shared/_player_row_edit.html" if editable else "shared/_player_row.html"
+            return templates.TemplateResponse(
+                template,
+                {
+                    "request": request,
+                    "player": player,
+                    "clubs": clubs,
+                    "teams": teams,
+                },
+            )
 
     @router.put("/api/players/{player_id}/club")
-    async def update_player_club(player_id: int, club_id: int | None = Form(None)):
-        logger.info(f"Updating player {player_id} club to {club_id}")
+    async def update_player_club(
+        player_id: int,
+        request: Request,
+        club_id: str = Form(None),
+        new_club_name: str = Form(None),
+    ):
+        logger.info(f"Updating player {player_id} club to {club_id} (new: {new_club_name})")
         """HTMX endpoint to update player club."""
         async with session_scope() as session:
             player = await session.get(Player, player_id)
-            if player:
-                player.club_id = int(club_id)
-                await session.commit()
-        return Response(status_code=204)
+            if not player:
+                return Response(status_code=404)
 
-    @router.post("/players/{player_id}/club")
-    async def create_club_and_assign(
-        player_id: int, request: Request, new_club_name: str = Form(...)
-    ):
-        """Creates a new club, assigns it to the player, and returns the updated dropdown."""
-        async with session_scope() as session:
-            # 1. Create the club
-            new_club = Club(name=new_club_name)
-            session.add(new_club)
-            await session.flush()  # Get the ID
-
-            # 2. Update the player
-            player = await session.get(Player, player_id)
-            if player:
+            if club_id == "new" and new_club_name:
+                new_club = Club(name=new_club_name)
+                session.add(new_club)
+                await session.flush()
                 player.club_id = new_club.id
+            elif club_id == "" or club_id == "None" or club_id is None:
+                player.club_id = None
+            else:
+                try:
+                    player.club_id = int(club_id)
+                except ValueError:
+                    pass  # Or handle error
 
             await session.commit()
 
-            # 3. Get all clubs to re-render the select
-            clubs = (await session.execute(select(Club))).scalars().all()
+        # Return the read-only row after update
+        return await get_player_row(player_id, request, editable=False)
 
-            # Return the select fragment (matching the one in players.html)
-            # In a real app, you might move this to a shared jinja macro
-            options = "".join(
-                [
-                    f'<option value="{c.id}" {"selected" if c.id == new_club.id else ""}>{c.name}</option>'
-                    for c in clubs
-                ]
-            )
-
-            return Response(
-                content=f"""
-                        <select name="club_id" class="bg-transparent border border-slate-300 rounded px-2 py-1 focus:outline-none focus:border-teal-500"
-                                hx-put="/players/{player_id}/club" hx-target="this" hx-swap="outerHTML">
-                            {options}
-                            <option disabled>──────────</option>
-                            <option value="new" hx-get="/players/{player_id}/club/new" hx-target="closest td" hx-swap="innerHTML">+ Add New Club...</option>
-                        </select>
-                    """
-            )

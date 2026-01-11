@@ -1,0 +1,58 @@
+<tr class="border-b border-gray-200 bg-teal-50 transition-colors duration-200">
+    <td colspan="3" class="p-0">
+        <div class="flex flex-col w-full">
+            <div class="flex flex-row w-full py-3 px-4">
+                <div class="w-1/3 text-left whitespace-nowrap overflow-hidden text-ellipsis pr-4">
+                    <span class="font-medium text-slate-600 text-sm">{{ player.name }}</span>
+                </div>
+                <div class="w-1/3 text-left whitespace-nowrap overflow-hidden text-ellipsis px-4">
+                    <span>
+                        {% for team in player.teams %}
+                            <span class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-xs font-medium">{{ team.name }}</span>{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                    </span>
+                </div>
+                <div class="w-1/3 text-left whitespace-nowrap pl-4">
+                    <div class="relative w-full">
+                        <select
+                                name="club_id"
+                                id="club-select-{{ player.id }}"
+                                class="bg-white border border-slate-300 rounded px-2 py-1 focus:outline-none focus:border-teal-500 text-sm w-full cursor-pointer"
+                                onchange="const input = this.nextElementSibling; input.classList.toggle('hidden', this.value !== 'new'); if(this.value === 'new') { setTimeout(() => input.focus(), 0); }"
+                        >
+                            <option value="" {% if not player.club %}selected{% endif %}>None</option>
+                            {% for club in clubs %}
+                            <option value="{{ club.id }}" {% if player.club and club.id == player.club.id %}selected{% endif %}>
+                                {{ club.name }}
+                            </option>
+                            {% endfor %}
+                            <option disabled>──────────</option>
+                            <option value="new">+ Add New Club...</option>
+                        </select>
+                        <input type="text" 
+                               id="new-club-input-{{ player.id }}"
+                               name="new_club_name" 
+                               placeholder="New club name..."
+                               class="hidden absolute left-0 top-0 bg-white border border-teal-500 rounded px-2 py-1 focus:outline-none text-sm w-full z-10"
+                               onkeydown="if(event.key==='Enter'){ event.preventDefault(); this.closest('div').parentElement.parentElement.nextElementSibling.querySelector('button[hx-put]').click(); }">
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 pb-3 px-4">
+                <button hx-put="/api/players/{{ player.id }}/club"
+                        hx-include="closest tr"
+                        hx-target="closest tr"
+                        hx-swap="outerHTML"
+                        class="bg-teal-600 hover:bg-teal-700 text-white px-3 py-1 rounded text-xs font-bold transition-colors">
+                    Apply
+                </button>
+                <button hx-get="/players/{{ player.id }}?editable=False"
+                        hx-target="closest tr"
+                        hx-swap="outerHTML"
+                        class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded text-xs font-bold transition-colors">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </td>
+</tr>
