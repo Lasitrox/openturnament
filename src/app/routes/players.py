@@ -86,13 +86,14 @@ def add_player_routes(router, templates):
     async def update_player_club(
         player_id: int,
         request: Request,
+        player_name: str = Form(None),
         club_id: str = Form(None),
         new_club_name: str = Form(None),
         team_ids: list[str] = Form(default=[]),
         new_team_name: str = Form(None),
     ):
-        logger.info(f"Updating player {player_id} club to {club_id} (new: {new_club_name}) and teams to {team_ids} (new: {new_team_name})")
-        """HTMX endpoint to update player club and teams."""
+        logger.info(f"Updating player {player_id}: name={player_name}, club={club_id} (new: {new_club_name}), teams={team_ids} (new: {new_team_name})")
+        """HTMX endpoint to update player name, club and teams."""
         async with session_scope() as session:
             player = await session.get(
                 Player,
@@ -101,6 +102,9 @@ def add_player_routes(router, templates):
             )
             if not player:
                 return Response(status_code=404)
+
+            if player_name:
+                player.name = player_name
 
             if club_id == "new" and new_club_name:
                 new_club = Club(name=new_club_name)
