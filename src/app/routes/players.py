@@ -88,11 +88,17 @@ def add_player_routes(router, templates):
         request: Request,
         club_id: str = Form(None),
         new_club_name: str = Form(None),
+        team_ids: list[str] = Form(default=[]),
+        new_team_name: str = Form(None),
     ):
-        logger.info(f"Updating player {player_id} club to {club_id} (new: {new_club_name})")
-        """HTMX endpoint to update player club."""
+        logger.info(f"Updating player {player_id} club to {club_id} (new: {new_club_name}) and teams to {team_ids} (new: {new_team_name})")
+        """HTMX endpoint to update player club and teams."""
         async with session_scope() as session:
-            player = await session.get(Player, player_id)
+            player = await session.get(
+                Player,
+                player_id,
+                options=[selectinload(Player.teams)]
+            )
             if not player:
                 return Response(status_code=404)
 
@@ -108,6 +114,27 @@ def add_player_routes(router, templates):
                     player.club_id = int(club_id)
                 except ValueError:
                     pass  # Or handle error
+
+            # Update teams
+            selected_team_ids = [int(tid) for tid in team_ids if tid.isdigit()]
+            
+            if selected_team_ids or ( "new" in team_ids and new_team_name):
+                teams = (
+                    (await session.execute(select(Team).where(Team.id.in_(selected_team_ids))))
+                    .scalars()
+                    .all()
+                )
+                player_teams = list(teams)
+                
+                if "new" in team_ids and new_team_name:
+                    new_team = Team(name=new_team_name)
+                    session.add(new_team)
+                    await session.flush()
+                    player_teams.append(new_team)
+                
+                player.teams = player_teams
+            else:
+                player.teams = []
 
             await session.commit()
 
