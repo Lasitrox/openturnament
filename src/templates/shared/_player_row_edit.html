@@ -52,9 +52,9 @@
                             <option disabled>──────────</option>
                             <option value="new">+ Add New Club...</option>
                         </select>
-                        <input type="text" 
+                        <input type="text"
                                id="new-club-input-{{ player.id }}"
-                               name="new_club_name" 
+                               name="new_club_name"
                                placeholder="New club name..."
                                class="hidden absolute left-0 top-0 bg-white border border-teal-500 rounded px-2 py-1 focus:outline-none text-sm w-full z-10"
                                onkeydown="if(event.key==='Enter'){ event.preventDefault(); this.closest('div').parentElement.parentElement.nextElementSibling.querySelector('button[hx-put]').click(); }">

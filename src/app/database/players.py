@@ -1,3 +1,5 @@
+"""Database models for players, clubs, groups, and teams."""
+
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -6,6 +8,7 @@ from src.app.database.base import DataBase
 
 class Group(DataBase):
     """Represents a group or category for players."""
+
     __tablename__ = "groups"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -16,6 +19,7 @@ class Group(DataBase):
 
 class Club(DataBase):
     """Represents a club affiliation."""
+
     __tablename__ = "clubs"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -26,6 +30,7 @@ class Club(DataBase):
 
 class PlayerTeam(DataBase):
     """Association table for Many-to-Many relationship between players and teams."""
+
     __tablename__ = "player_team"
 
     player_id: Mapped[int] = mapped_column(ForeignKey("players.id"), primary_key=True)
@@ -56,6 +61,7 @@ class Player(DataBase):
     :ivar teams: List of teams associated with the player.
     :type teams: list[Team]
     """
+
     __tablename__ = "players"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -70,12 +76,14 @@ class Player(DataBase):
         secondary="player_team", back_populates="players"
     )
 
+
 class Team(DataBase):
     """Representation of a sports team.
 
-    This class maps to the "teams" table in the database. Each team has an identifier, a name, 
-    and a foreign key reference to a player. Additionally, it includes a relationship back 
-    to the associated player for easy access to related data.
+    This class maps to the "teams" table in the database. Each team has an
+    identifier, a name, and a foreign key reference to a player. Additionally,
+    it includes a relationship back to the associated player for easy access to
+    related data.
 
     :ivar id: Unique identifier for the team.
     :type id: int
@@ -87,6 +95,7 @@ class Team(DataBase):
     "Player" entity, allowing bidirectional navigation between Team and Player.
     :type Player: Player
     """
+
     __tablename__ = "teams"
 
     id: Mapped[int] = mapped_column(primary_key=True)

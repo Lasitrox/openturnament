@@ -1,7 +1,11 @@
+"""Root routes for the application."""
+
 from starlette.requests import Request
 
 
 def add_root_routes(router, templates):
+    """Add root routes to the router."""
+
     @router.get("/")
     def index(request: Request):
         """Home page - generates an image and name of a random artist."""
@@ -11,7 +15,6 @@ def add_root_routes(router, templates):
                 "request": request,
             },
         )
-
 
     @router.get("/about")
     def about(request: Request):

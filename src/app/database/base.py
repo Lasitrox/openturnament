@@ -1,3 +1,5 @@
+"""Database base configuration and session management."""
+
 from contextlib import asynccontextmanager
 
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
@@ -15,12 +17,13 @@ DataBase = declarative_base()
 
 @asynccontextmanager
 async def session_scope() -> AsyncSession:
+    """Context manager for database sessions."""
     session: AsyncSession = session_maker()
     try:
         yield session
         await session.commit()
-    except Exception as e:
+    except Exception:
         await session.rollback()
-        raise e
+        raise
     finally:
         await session.close()

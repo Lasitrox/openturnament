@@ -1,3 +1,5 @@
+"""Main entry point for the FastAPI application."""
+
 import asyncio
 import logging
 from contextlib import asynccontextmanager
@@ -27,8 +29,9 @@ async def log_subprocess_output(stream, logger, level):
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):  # noqa: ARG001
-    """Context manager for FastAPI
-    on app startup, and will run code after `yield` on app shutdown.
+    """Context manager for FastAPI lifespan.
+
+    This runs code on app startup, and will run code after `yield` on app shutdown.
     """
     logger = logging.getLogger("Fast API lifespan")
 

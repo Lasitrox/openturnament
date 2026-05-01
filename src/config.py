@@ -1,3 +1,5 @@
+"""Configuration settings for the application."""
+
 from pathlib import Path
 from typing import Any
 
@@ -6,6 +8,8 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
+    """Application settings using Pydantic BaseSettings."""
+
     APP_DIR: Path = Path().cwd()
     SRC_DIR: Path = APP_DIR / "src"
 
@@ -29,8 +33,7 @@ class Settings(BaseSettings):
 
     @property
     def fastapi_kwargs(self) -> dict[str, Any]:
-        """Creates dictionary of values to pass to FastAPI app
-        as **kwargs.
+        """Creates dictionary of values to pass to FastAPI app as **kwargs.
 
         Returns:
             dict: This can be unpacked as **kwargs to pass to FastAPI app.
