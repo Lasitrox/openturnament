@@ -72,9 +72,7 @@ class Player(DataBase):
     # Relationships
     group: Mapped["Group"] = relationship(back_populates="players")
     club: Mapped["Club"] = relationship(back_populates="players")
-    teams: Mapped[list["Team"]] = relationship(
-        secondary="player_team", back_populates="players"
-    )
+    teams: Mapped[list["Team"]] = relationship(secondary="player_team", back_populates="players")
 
 
 class Team(DataBase):
@@ -102,6 +100,4 @@ class Team(DataBase):
     name: Mapped[str] = mapped_column(unique=True)
 
     # Many-to-many relationship to 'players'
-    players: Mapped[list["Player"]] = relationship(
-        secondary="player_team", back_populates="teams"
-    )
+    players: Mapped[list["Player"]] = relationship(secondary="player_team", back_populates="teams")

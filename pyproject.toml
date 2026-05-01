@@ -33,6 +33,7 @@ exclude = [
 ]
 indent-width = 4
 target-version = "py311"
+line-length = 120
 
 [tool.ruff.lint]
 select = ["B", "E7", "E9", "W2", "W6", "F", "I", "FA", "ISC", "ICN", "LOG", "INP", "PIE", "T20", "PYI", "SLOT", "UP", "W", "FLY", "C4", "RUF", "G", "RSE", "RET", "SIM", "TC", "PTH", "PERF","N","E", "ASYNC", "A", "TRY", "DTZ", "PT", "FURB", "SLF", "ARG", "PGH", "G004", "PL", "PLR", "C90", "D",]

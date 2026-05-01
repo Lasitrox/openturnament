@@ -11,9 +11,7 @@ from sqlalchemy.orm import selectinload
 from src.app.database import Club, Group, Player, Team, session_scope
 
 
-async def get_player_row(
-    player_id: int, request: Request, templates, editable: bool = False
-):
+async def get_player_row(player_id: int, request: Request, templates, editable: bool = False):
     """Returns a single player row, either read-only or editable."""
     async with session_scope() as session:
         player = await session.get(
@@ -31,9 +29,7 @@ async def get_player_row(
         clubs = (await session.execute(select(Club))).scalars().all()
         teams = (await session.execute(select(Team))).scalars().all()
 
-        template = (
-            "shared/_player_row_edit.html" if editable else "shared/_player_row.html"
-        )
+        template = "shared/_player_row_edit.html" if editable else "shared/_player_row.html"
         return templates.TemplateResponse(
             template,
             {
@@ -67,9 +63,7 @@ async def update_player_club_logic(
         new_team_name,
     )
     async with session_scope() as session:
-        player = await session.get(
-            Player, player_id, options=[selectinload(Player.teams)]
-        )
+        player = await session.get(Player, player_id, options=[selectinload(Player.teams)])
         if not player:
             return Response(status_code=404)
 
@@ -93,15 +87,7 @@ async def update_player_club_logic(
         selected_team_ids = [int(tid) for tid in team_ids if tid.isdigit()]
 
         if selected_team_ids or is_new_team:
-            teams = (
-                (
-                    await session.execute(
-                        select(Team).where(Team.id.in_(selected_team_ids))
-                    )
-                )
-                .scalars()
-                .all()
-            )
+            teams = (await session.execute(select(Team).where(Team.id.in_(selected_team_ids)))).scalars().all()
             player_teams = list(teams)
 
             if is_new_team:
@@ -120,7 +106,7 @@ async def update_player_club_logic(
     return await get_player_row(player_id, request, templates, editable=False)
 
 
-def add_player_routes(router, templates):
+def add_player_routes(router, templates):  # noqa: C901
     """Add routes related to players to the router."""
     logger = logging.getLogger(__name__)
 
@@ -129,7 +115,7 @@ def add_player_routes(router, templates):
         """Players page - display the roster of competitors."""
         logger.info("Displaying players page")
         async with session_scope() as session:
-            players: list[Player] = (
+            players: list[Player] = list(
                 (
                     await session.execute(
                         select(Player).options(
@@ -162,9 +148,7 @@ def add_player_routes(router, templates):
             )
 
     @router.get("/players/{player_id}")
-    async def get_player_row_endpoint(
-        player_id: int, request: Request, editable: bool = False
-    ):
+    async def get_player_row_endpoint(player_id: int, request: Request, editable: bool = False):
         """Returns a single player row, either read-only or editable."""
         return await get_player_row(player_id, request, templates, editable)
 
@@ -189,3 +173,79 @@ def add_player_routes(router, templates):
             team_ids,
             new_team_name,
         )
+
+    @router.get("/api/groups/{group_id}/edit")
+    async def edit_group_title(group_id: int, request: Request):
+        """Returns the editable group title fragment."""
+        async with session_scope() as session:
+            group = await session.get(Group, group_id)
+            if not group:
+                return Response(status_code=404)
+            return templates.TemplateResponse("shared/_group_title_edit.html", {"request": request, "group": group})
+
+    @router.get("/api/groups/{group_id}")
+    async def get_group_title(group_id: int, request: Request):  # noqa: ARG001
+        """Returns the read-only group title fragment."""
+        async with session_scope() as session:
+            group = await session.get(Group, group_id)
+            if not group:
+                return Response(status_code=404)
+            return Response(
+                f'<h3 id="group-title-{group.id}" class="text-xl font-semibold text-slate-700 mb-4 border-b-2 '
+                f'border-teal-500 inline-block self-start cursor-pointer hover:text-teal-600" '
+                f'hx-get="/api/groups/{group.id}/edit" hx-target="this" hx-swap="outerHTML">{group.name}</h3>'
+            )
+
+    @router.put("/api/groups/{group_id}")
+    async def update_group_title(group_id: int, request: Request, group_name: str = Form(...)):  # noqa: ARG001
+        """Updates the group title and returns the read-only fragment."""
+        async with session_scope() as session:
+            group = await session.get(Group, group_id)
+            if not group:
+                return Response(status_code=404)
+            group.name = group_name
+            await session.commit()
+            return Response(
+                f'<h3 id="group-title-{group.id}" class="text-xl font-semibold text-slate-700 mb-4 border-b-2 '
+                f'border-teal-500 inline-block self-start cursor-pointer hover:text-teal-600" '
+                f'hx-get="/api/groups/{group.id}/edit" hx-target="this" hx-swap="outerHTML">{group.name}</h3>'
+            )
+
+    @router.post("/api/groups")
+    async def add_group(request: Request, group_name: str = Form(...)):  # noqa: ARG001
+        """Creates a new group and reloads the players page (or returns the new group fragment)."""
+        async with session_scope() as session:
+            new_group = Group(name=group_name)
+            session.add(new_group)
+            await session.commit()
+
+            return Response(headers={"HX-Refresh": "true"})
+
+    @router.get("/api/groups/{group_id}/players/add/button")
+    async def get_add_player_button(group_id: int, request: Request):
+        """Returns the button fragment for adding a new player to a group."""
+        return templates.TemplateResponse("shared/_player_add_button.html", {"request": request, "group_id": group_id})
+
+    @router.get("/api/groups/{group_id}/players/add/form")
+    async def get_add_player_form(group_id: int, request: Request):
+        """Returns the form fragment for adding a new player to a group."""
+        return templates.TemplateResponse("shared/_player_add_form.html", {"request": request, "group_id": group_id})
+
+    @router.post("/api/groups/{group_id}/players")
+    async def add_player_to_group(group_id: int, request: Request, player_name: str = Form(...)):  # noqa: ARG001
+        """Creates a new player in the specified group and reloads the page."""
+        async with session_scope() as session:
+            new_player = Player(name=player_name, group_id=group_id)
+            session.add(new_player)
+            await session.commit()
+            return Response(headers={"HX-Refresh": "true"})
+
+    @router.get("/api/groups/add/form")
+    async def get_add_group_form(request: Request):
+        """Returns the form fragment for adding a new group."""
+        return templates.TemplateResponse("shared/_group_add_form.html", {"request": request})
+
+    @router.get("/api/groups/add/button")
+    async def get_add_group_button(request: Request):
+        """Returns the button fragment for adding a new group."""
+        return templates.TemplateResponse("shared/_group_add_button.html", {"request": request})

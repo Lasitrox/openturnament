@@ -1,0 +1,30 @@
+<div class="flex flex-col min-w-[300px] h-full">
+    <h3 class="text-xl font-semibold text-slate-400 mb-4 border-b-2 border-slate-200 inline-block self-start">
+        Add New Group
+    </h3>
+    <div class="bg-white shadow-md rounded-lg p-6 border-2 border-dashed border-slate-300 flex flex-col items-center justify-center grow">
+        <form hx-post="/api/groups" hx-target="#player-roster" hx-swap="none" class="flex flex-col gap-4 w-full"
+              onkeydown="if(event.key==='Escape'){ event.preventDefault(); document.getElementById('cancel-add-group').click(); }">
+            <input type="text"
+                   name="group_name"
+                   placeholder="Group Name..."
+                   required
+                   autofocus
+                   class="bg-slate-50 border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:border-teal-500 w-full text-slate-700">
+            <div class="flex flex-row gap-2">
+                <button type="submit"
+                        class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 grow">
+                    Create Group
+                </button>
+                <button type="button"
+                        id="cancel-add-group"
+                        hx-get="/api/groups/add/button"
+                        hx-target="closest .flex-col"
+                        hx-swap="outerHTML"
+                        class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded-lg transition-colors duration-200">
+                    ✕
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

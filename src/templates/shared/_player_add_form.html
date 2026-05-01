@@ -1,0 +1,30 @@
+<div class="p-4 bg-white shadow-md rounded-lg border border-slate-200">
+    <form hx-post="/api/groups/{{ group_id }}/players"
+          hx-target="#player-roster"
+          hx-swap="none"
+          class="flex flex-col gap-3 w-full"
+          onkeydown="if(event.key==='Escape'){ event.preventDefault(); document.getElementById('cancel-add-player-{{ group_id }}').click(); }">
+
+        <input type="text"
+               name="player_name"
+               placeholder="Player Name..."
+               required
+               autofocus
+               class="bg-slate-50 border border-slate-300 rounded px-3 py-1.5 focus:outline-none focus:border-teal-500 w-full text-slate-700 text-sm">
+
+        <div class="flex flex-row gap-2">
+            <button type="submit"
+                    class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-1.5 px-3 rounded text-sm transition-colors duration-200 grow">
+                Add Player
+            </button>
+            <button type="button"
+                    id="cancel-add-player-{{ group_id }}"
+                    hx-get="/api/groups/{{ group_id }}/players/add/button"
+                    hx-target="closest div.p-4"
+                    hx-swap="outerHTML"
+                    class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-1.5 px-3 rounded text-sm transition-colors duration-200">
+                ✕
+            </button>
+        </div>
+    </form>
+</div>

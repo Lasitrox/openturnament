@@ -86,9 +86,7 @@ async def insert_data():
                         player_teams.append(second_team)
 
                 # Assign a club (every 5th player has no club)
-                player_club = (
-                    clubs[player_idx % len(clubs)] if player_idx % 5 != 0 else None
-                )
+                player_club = clubs[player_idx % len(clubs)] if player_idx % 5 != 0 else None
 
                 players.append(
                     Player(

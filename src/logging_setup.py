@@ -21,9 +21,7 @@ class ColorFormatter(logging.Formatter):
     def format(self, record):
         """Format the specified record as text."""
         color = self.COLORS.get(record.levelname, self.RESET)
-        log_fmt = (
-            f"{color}%(asctime)s - %(name)s - %(levelname)s - %(message)s{self.RESET}"
-        )
+        log_fmt = f"{color}%(asctime)s - %(name)s - %(levelname)s - %(message)s{self.RESET}"
         formatter = logging.Formatter(log_fmt)
         return formatter.format(record)
 

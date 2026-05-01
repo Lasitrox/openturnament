@@ -19,9 +19,7 @@ class RouterBase:
     def __init__(self):
         """Initialize the router base with settings and templates."""
         self.settings: Settings = Settings()
-        self.templates: Jinja2Blocks = Jinja2Blocks(
-            directory=self.settings.TEMPLATE_DIR
-        )
+        self.templates: Jinja2Blocks = Jinja2Blocks(directory=self.settings.TEMPLATE_DIR)
         self.router: APIRouter = APIRouter()
 
         self.create_routes()
