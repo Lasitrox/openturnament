@@ -1,5 +1,6 @@
 """Main entry point for the FastAPI application."""
 
+import argparse
 import asyncio
 import logging
 from contextlib import asynccontextmanager
@@ -14,7 +15,25 @@ from src.app.routes import RouterBase
 from src.config import Settings
 from src.logging_setup import LOGGING_CONFIG, setup_logging
 
+
+def parse_args():
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(description="Run the FastAPI application.")
+    parser.add_argument(
+        "--load-testdata",
+        action="store_true",
+        help="Load test data into the database",
+    )
+    return parser.parse_args()
+
+
+args = parse_args()
 settings = Settings()
+
+if args.load_testdata:
+    settings.USE_TEST_DATABASE = True
+else:
+    settings.USE_TEST_DATABASE = False
 
 
 async def log_subprocess_output(stream, logger, level):

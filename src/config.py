@@ -29,7 +29,7 @@ class Settings(BaseSettings):
     DISABLE_DOCS: bool = True
 
     RUN_TAILWIND: bool = True
-    USE_TEST_DATABASE: bool = True
+    USE_TEST_DATABASE: bool = False
 
     @property
     def fastapi_kwargs(self) -> dict[str, Any]:
