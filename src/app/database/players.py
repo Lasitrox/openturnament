@@ -101,3 +101,27 @@ class Team(DataBase):
 
     # Many-to-many relationship to 'players'
     players: Mapped[list["Player"]] = relationship(secondary="player_team", back_populates="teams")
+
+
+class DisciplineGroup(DataBase):
+    """Represents a group or category for disciplines."""
+
+    __tablename__ = "discipline_groups"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(unique=True)
+
+    disciplines: Mapped[list["Discipline"]] = relationship(back_populates="group")
+
+
+class Discipline(DataBase):
+    """Represents a discipline in the system."""
+
+    __tablename__ = "disciplines"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(unique=True)
+    group_id: Mapped[int] = mapped_column(ForeignKey("discipline_groups.id"), nullable=True)
+
+    # Relationships
+    group: Mapped["DisciplineGroup"] = relationship(back_populates="disciplines")

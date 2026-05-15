@@ -2,7 +2,7 @@
 
 import logging
 
-from src.app.database import Club, Group, Player, Team, session_scope
+from src.app.database import Club, Discipline, DisciplineGroup, Group, Player, Team, session_scope
 
 
 async def insert_data():
@@ -100,3 +100,16 @@ async def insert_data():
 
         logger.info("Adding players")
         session.add_all(players)
+
+        discipline_group_names = ["Martial Arts", "Track & Field"]
+        discipline_groups = [DisciplineGroup(name=name) for name in discipline_group_names]
+        session.add_all(discipline_groups)
+        await session.flush()
+
+        disciplines = [
+            Discipline(name="Judo", group=discipline_groups[0]),
+            Discipline(name="Karate", group=discipline_groups[0]),
+            Discipline(name="100m Sprint", group=discipline_groups[1]),
+            Discipline(name="Long Jump", group=discipline_groups[1]),
+        ]
+        session.add_all(disciplines)

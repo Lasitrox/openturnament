@@ -1,0 +1,21 @@
+<div class="flex flex-row items-center gap-2 mb-4 self-start border-b-2 border-teal-500">
+    <input type="text"
+           name="group_name"
+           value="{{ group.name }}"
+           class="text-xl font-semibold text-slate-700 bg-white border border-teal-500 rounded px-2 py-0 focus:outline-none w-48"
+           onkeydown="if(event.key==='Enter'){ event.preventDefault(); this.nextElementSibling.click(); }
+                      if(event.key==='Escape'){ event.preventDefault(); this.parentElement.querySelector('[hx-get]').click(); }">
+    <button hx-put="/api/discipline_groups/{{ group.id }}"
+            hx-include="previous input"
+            hx-target="closest div"
+            hx-swap="outerHTML"
+            class="bg-teal-600 hover:bg-teal-700 text-white px-2 py-1 rounded text-xs font-bold transition-colors">
+        Save
+    </button>
+    <button hx-get="/api/discipline_groups/{{ group.id }}"
+            hx-target="closest div"
+            hx-swap="outerHTML"
+            class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-2 py-1 rounded text-xs font-bold transition-colors">
+        Cancel
+    </button>
+</div>

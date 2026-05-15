@@ -7,6 +7,7 @@ from jinja2_fragments.fastapi import Jinja2Blocks
 
 from src.config import Settings
 
+from .disciplines import add_discipline_routes
 from .players import add_player_routes
 from .root import add_root_routes
 
@@ -27,6 +28,7 @@ class RouterBase:
     def create_routes(self):
         """Create and add routes to the router."""
         add_player_routes(self.router, self.templates)
+        add_discipline_routes(self.router, self.templates)
         add_root_routes(self.router, self.templates)
 
     @classmethod
