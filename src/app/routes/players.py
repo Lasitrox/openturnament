@@ -41,7 +41,7 @@ async def get_player_row(player_id: int, request: Request, templates, editable: 
         )
 
 
-async def update_player_club_logic(
+async def update_player_logic(
     player_id: int,
     request: Request,
     templates,
@@ -152,7 +152,7 @@ def add_player_routes(router, templates):  # noqa: C901
         """Returns a single player row, either read-only or editable."""
         return await get_player_row(player_id, request, templates, editable)
 
-    @router.put("/api/players/{player_id}/club")
+    @router.put("/api/players/{player_id}")
     async def update_player_club_endpoint(
         player_id: int,
         request: Request,
@@ -163,7 +163,7 @@ def add_player_routes(router, templates):  # noqa: C901
         new_team_name: Annotated[str | None, Form()] = None,
     ):
         """HTMX endpoint to update player name, club and teams."""
-        return await update_player_club_logic(
+        return await update_player_logic(
             player_id,
             request,
             templates,

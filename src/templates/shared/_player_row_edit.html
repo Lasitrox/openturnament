@@ -62,7 +62,7 @@
                 </div>
             </div>
             <div class="flex justify-end gap-2 pb-3 px-4">
-                <button hx-put="/api/players/{{ player.id }}/club"
+                <button hx-put="/api/players/{{ player.id }}"
                         hx-include="closest tr"
                         hx-target="closest tr"
                         hx-swap="outerHTML"
